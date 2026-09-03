@@ -1,0 +1,49 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: ${CONTAINER_NAME:-minecraft-server}
+    restart: unless-stopped
+    ports:
+      - "${PORT:-25565}:25565"
+    environment:
+      - EULA=TRUE
+      - TYPE=${TYPE:-PAPER}
+      - VERSION=${VERSION:-LATEST}
+      - MEMORY=${MEMORY:-2G}
+      - TZ=${TZ:-UTC}
+      - ONLINE_MODE=FALSE
+      - PLUGINS=https://github.com/AuthMe/AuthMeReloaded/releases/download/5.6.0/AuthMe-5.6.0.jar
+    volumes:
+      - ./data:/data
+    networks:
+      - proxy
+
+  web:
+    build: ./web
+    container_name: minecraft-web-admin
+    user: "1000:1000"
+    restart: unless-stopped
+    environment:
+      - JWT_SECRET=${MINECRAFT_JWT_SECRET:-supersecurejwtsecretvalueforlocaldevelopmentonly}
+    volumes:
+      - ./data/plugins/AuthMe:/app/db:rw
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      # HTTPS Router
+      - "traefik.http.routers.minecraft-web.rule=Host(`${MINECRAFT_DOMAIN}`)"
+      - "traefik.http.routers.minecraft-web.entrypoints=websecure"
+      - "traefik.http.routers.minecraft-web.tls=true"
+      - "traefik.http.routers.minecraft-web.service=minecraft-web-svc"
+      # HTTP to HTTPS Redirect
+      - "traefik.http.routers.minecraft-web-red.rule=Host(`${MINECRAFT_DOMAIN}`)"
+      - "traefik.http.routers.minecraft-web-red.entrypoints=web"
+      - "traefik.http.routers.minecraft-web-red.middlewares=https-redirect@docker"
+      # Service definition
+      - "traefik.http.services.minecraft-web-svc.loadbalancer.server.port=8000"
+
+networks:
+  proxy:
+    name: ${PROXY_NETWORK:-proxy-net}
+    external: true
