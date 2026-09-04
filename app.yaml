@@ -1,0 +1,16 @@
+name: "minecraft"
+aliases:
+  - "mc"
+  - "server"
+domain: "minecraft.roadtotech.me"
+description: "PaperMC Minecraft Server with Bluemap Live View"
+visible: true
+auth: false
+networks:
+  - proxy-net
+homepage:
+  title: "Minecraft"
+  group: "Media & Productivity"
+  icon: "minecraft.png"
+  container: "minecraft-server"
+  weight: 20
