@@ -1,28 +1,40 @@
-# ⛏️ Homelab Minecraft (Paper + Web Auth Admin)
+# ⛏️ Homelab Minecraft (PaperMC & Live Map)
 
-Dedicated Paper Minecraft server with AuthMe integration and a custom FastAPI web administration dashboard.
-
-Part of the [homelab-core](https://github.com/kiskaadee/homelab-core) cluster ecosystem.
+PaperMC high-performance Minecraft dedicated server with real-time web map rendering (BlueMap).
 
 ---
 
-## 🏗️ Architecture & Stack
+## 🏗️ Architecture & Requirements
 
-- **Game Server**: `itzg/minecraft-server:latest` (Paper 1.21+, Port `25565`)
-- **Web Admin**: Custom FastAPI dashboard in `./web/` (Port `8000`)
-- **Storage**: `./data` (server world files, plugins, and configs — gitignored)
-- **Domain**: `minecraft.arch-services.mywire.org`
+- **Proxy Network**: Attached to external `proxy-net`
+- **Domain**: `minecraft.roadtotech.me` (Web Map)
+- **Game Port**: `25565` (Direct TCP connection)
+- **Web Map Port**: `8100`
 
 ---
 
-## ⚙️ Environment Variables & Secrets
+## ⚙️ Configuration & Metadata (`app.yaml`)
 
-| Variable | Description | Default / Example |
-| :--- | :--- | :--- |
-| `MINECRAFT_DOMAIN` | Web Admin FQDN | `minecraft.arch-services.mywire.org` |
-| `PORT` | Minecraft TCP game port | `25565` |
-| `MEMORY` | Allocated JVM Heap memory | `2G` |
-| `MINECRAFT_JWT_SECRET` | Secret token for web auth | Injected from SOPS |
+```yaml
+name: "minecraft"
+aliases:
+  - "mc"
+  - "server"
+domain: "minecraft.roadtotech.me"
+description: "PaperMC Minecraft Server with Bluemap Live View"
+visible: true
+auth: false
+networks:
+  - proxy-net
+env:
+  MINECRAFT_DOMAIN: "minecraft.roadtotech.me"
+homepage:
+  title: "Minecraft"
+  group: "Media & Productivity"
+  icon: "minecraft.png"
+  container: "minecraft-server"
+  weight: 20
+```
 
 ---
 
@@ -30,10 +42,17 @@ Part of the [homelab-core](https://github.com/kiskaadee/homelab-core) cluster ec
 
 ### Via Orchestrator (`appctl`)
 ```bash
-appctl up homelab-minecraft
+appctl up minecraft
+# or using shortcut alias
+appctl up mc
 ```
 
 ### Manual Deployment
 ```bash
-docker compose up --build -d
+docker compose up -d
 ```
+
+---
+
+## 📄 License
+This repository is released into the public domain under the [Unlicense](LICENSE).
