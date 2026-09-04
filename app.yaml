@@ -8,6 +8,8 @@ visible: true
 auth: false
 networks:
   - proxy-net
+env:
+  MINECRAFT_DOMAIN: "minecraft.roadtotech.me"
 homepage:
   title: "Minecraft"
   group: "Media & Productivity"
