@@ -30,6 +30,7 @@ services:
     networks:
       - proxy
     labels:
+      - "diun.enable=false"
       - "traefik.enable=true"
       # HTTPS Router
       - "traefik.http.routers.minecraft-web.rule=Host(`${MINECRAFT_DOMAIN}`)"
